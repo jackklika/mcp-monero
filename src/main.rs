@@ -1,5 +1,5 @@
 use anyhow::Result;
-use common::counter::Counter;
+use common::monero::MarblesService;
 use rmcp::{ServiceExt, transport::stdio};
 use tracing_subscriber::{self, EnvFilter};
 mod common;
@@ -16,9 +16,12 @@ async fn main() -> Result<()> {
     tracing::info!("Starting MCP server");
 
     // Create an instance of our counter router
-    let service = Counter::new().serve(stdio()).await.inspect_err(|e| {
-        tracing::error!("serving error: {:?}", e);
-    })?;
+    let service = MarblesService::new()
+        .serve(stdio())
+        .await
+        .inspect_err(|e| {
+            tracing::error!("serving error: {:?}", e);
+        })?;
 
     service.waiting().await?;
     Ok(())
